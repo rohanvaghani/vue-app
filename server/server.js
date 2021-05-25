@@ -3,7 +3,18 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
 const app = express();
-const port = 8000;
+const PORT = 8000;
+const mongoose = require('mongoose');
+const config = require('./DB.js');
+const postRoute = require('./post.route');
+
+mongoose.Promise = global.Promise;
+mongoose.connect(config.DB, { 
+  useNewUrlParser: true,
+  useUnifiedTopology: true }).then(
+  () => {console.log('Database is connected') },
+  err => { console.log('Can not connect to the database'+ err)}
+);
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -61,5 +72,8 @@ app.get('/', (req, res) => {
   res.send(`Hi! Server is listening on port ${port}`)
 });
 
-// listen on the port
-app.listen(port);
+app.use('/posts', postRoute);
+
+app.listen(PORT, function(){
+  console.log('Server is running on Port:',PORT);
+});
